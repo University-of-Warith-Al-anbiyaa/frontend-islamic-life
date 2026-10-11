@@ -54,6 +54,7 @@ export default function Navbar() {
 
 	const isSeventhPage = location.pathname.startsWith("/seventh-conference");
 	const isGalleryPage = location.pathname.startsWith(GALLERY_PATH);
+	const isEnglishSeventhPage = isSeventhPage && lang === "en";
 	const activeLinks = isSeventhPage
 		? t.seventhConference.navLinks.filter(
 				(link) => link.id !== "contact" && link.id !== "seventh-hero",
@@ -296,7 +297,7 @@ export default function Navbar() {
 			>
 				<button
 					onClick={handleBrandClick}
-					className="flex min-w-0 shrink-0 items-center gap-2.5 whitespace-nowrap text-start sm:gap-3 min-[1600px]:w-[12rem]"
+					className="flex min-w-0 shrink-0 items-center gap-2.5 whitespace-nowrap text-start sm:gap-3 min-[1600px]:me-8 min-[1600px]:w-[12rem]"
 				>
 					<ConferenceLogo className="h-14 w-14 shrink-0 sm:h-16 sm:w-16" />
 					<span
@@ -328,12 +329,24 @@ export default function Navbar() {
 					</span>
 				</button>
 
-				<nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 min-[1600px]:flex">
+				<nav
+					className={`hidden min-w-0 flex-1 items-center min-[1600px]:flex ${
+						!isSeventhPage
+							? "justify-center"
+							: "justify-end"
+					} ${
+						isEnglishSeventhPage
+							? "flex-wrap gap-x-4 gap-y-1"
+							: "gap-6"
+					}`}
+				>
 					{activeLinks.map((link) => (
 						<button
 							key={link.id}
 							onClick={() => scrollTo(link.id)}
 							className={`whitespace-nowrap text-[14px] font-medium transition-colors hover:text-gold-500 ${
+								isEnglishSeventhPage ? "shrink-0" : ""
+							} ${
 								scrolled ? scrolledTextClass : "text-paper"
 							}`}
 						>
@@ -345,6 +358,8 @@ export default function Navbar() {
 						<button
 							onClick={() => scrollTo(contactLink.id)}
 							className={`whitespace-nowrap text-[14px] font-medium transition-colors hover:text-gold-500 ${
+								isEnglishSeventhPage ? "shrink-0" : ""
+							} ${
 								scrolled ? scrolledTextClass : "text-paper"
 							}`}
 						>
@@ -370,6 +385,8 @@ export default function Navbar() {
 							aria-haspopup="menu"
 							aria-expanded={previousVersionsOpen}
 							className={`flex items-center gap-1.5 whitespace-nowrap py-1.5 text-[14px] font-medium transition-colors hover:text-gold-500 ${
+								isEnglishSeventhPage ? "shrink-0" : ""
+							} ${
 								scrolled ? scrolledTextClass : "text-paper"
 							}`}
 						>
@@ -657,8 +674,8 @@ export default function Navbar() {
 			</div>
 
 			{open && (
-				<div className="max-h-[calc(100svh-5.5rem)] overflow-y-auto overscroll-contain border-t border-ink-900/10 bg-paper px-5 py-4 dark:border-paper/10 dark:bg-ink-950 min-[1600px]:hidden">
-					<div className="flex flex-col gap-1">
+				<div className="max-h-[calc(100svh-5.5rem)] overflow-y-auto overscroll-contain border-t border-ink-900/10 bg-paper px-5 pb-4 pt-7 dark:border-paper/10 dark:bg-ink-950 min-[1600px]:hidden">
+					<div className="flex flex-col gap-2">
 						{activeLinks.map((link) => (
 							<button
 								key={link.id}

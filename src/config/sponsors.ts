@@ -2,7 +2,7 @@ import shrineLogo from '../../شعار العتبة.png'
 import universityLogo from '../../شعار وارث.png'
 
 /**
- * الجهات الداعمة (Sponsors) — تظهر في قسم "الجهات الداعمة" بالموقع.
+ * الجهات الداعمة والجهة الأكاديمية المُقيِّمة في الصفحة الرئيسية.
  *
  * لإضافة شعار جديد:
  * 1) ضع ملف الصورة داخل: public/images/sponsors/
@@ -10,8 +10,7 @@ import universityLogo from '../../شعار وارث.png'
  * 2) أضف عنصرًا جديدًا هنا واكتب اسم الملف في logo بهذا الشكل: '/images/sponsors/اسم-الملف.png'
  * 3) أضف url لموقع الجهة (اختياري) — إن تُرك فارغًا لن تكون الصورة قابلة للنقر.
  *
- * الشعاران أدناه يستخدمان صورًا مؤقتة (Placeholder) وضعتها في نفس المسار —
- * استبدل هذين الملفين بالشعارين الحقيقيين بنفس الاسمين وسيتحدث الموقع تلقائيًا.
+ * استخدم شعار الجهة الداعمة فقط؛ الجهة المُقيِّمة تُعرض ببطاقة أكاديمية مميزة.
  */
 export interface Sponsor {
   nameAr: string
@@ -20,7 +19,7 @@ export interface Sponsor {
   logo?: string
 }
 
-export const sponsors: Sponsor[] = [
+export const supportingOrganizations: Sponsor[] = [
   {
     nameAr: 'العتبة الحسينية المقدسة',
     nameEn: 'Al-Hussainiya Holy Shrine',
@@ -33,11 +32,11 @@ export const sponsors: Sponsor[] = [
     url: 'https://uowa-new.uowa.edu.iq/arabic',
     logo: universityLogo,
   },
-  {
-    nameAr: 'كلية العلوم الإسلامية',
-    nameEn: 'College of Islamic Sciences',
-    url: 'https://uowa-new.uowa.edu.iq/arabic/islamic',
-    logo: universityLogo,
-  },
-  // أضف بقية الجهات الداعمة هنا بنفس الطريقة عند الحاجة مستقبلاً.
 ]
+
+export const evaluatingOrganization: Sponsor = {
+  nameAr: 'كلية العلوم الإسلامية',
+  nameEn: 'College of Islamic Sciences',
+  url: 'https://uowa-new.uowa.edu.iq/arabic/islamic',
+  logo: universityLogo,
+}

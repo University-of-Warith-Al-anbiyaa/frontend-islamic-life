@@ -47,9 +47,8 @@ export const content = {
       editionBadge: 'المؤتمر الدولي السابع — الدورة الحالية',
       editionTitle: 'مؤتمر الإسلام حياة العلمي السابع',
       themeTitle: 'الإعلام وصناعة الوعي الجمعي في تعزيز مبادئ الحكم الرشيد',
-      eyebrow: 'برعاية العتبة الحسينية المقدسة، تقيم كلية العلوم الإسلامية / جامعة وارث الأنبياء المؤتمر السنوي',
-      subtitle:
-        'ضمن المسار العام لمؤتمر الإسلام حياة — ملتقى فكري وثقافي وأكاديمي يناقش قضايا الهوية والتعليم والمجتمع ، الإسلامي في مواجهة تحديات العصر، وبناء الإنسان وتنمية الحياة.',
+      eyebrow: 'برعاية العتبة الحسينية المقدسة ورئاسة جامعة وارث الأنبياء، تقيم كلية العلوم الإسلامية المؤتمر السنوي',
+      
       ctaPrimary: 'قدّم بحثك إلى المؤتمر الدولي السابع',
       ctaRules: 'شروط استلام البحث',
       ctaCommittees: 'اللجان المشرفة',
@@ -343,7 +342,11 @@ themeTitle: '« عنوانٌ استمدّ وجوده من سبل خدمة الد
     },
     sponsors: {
       title: 'الجهات الداعمة',
-      subtitle: 'برعاية وشراكة الجهتين الآتيتين',
+    //  subtitle: 'شركاء المؤتمر وجهته الأكاديمية المُقيِّمة',
+    //  supportingTitle: 'الجهات الداعمة',
+      evaluatorTitle: 'الجهة المُقيِّمة',
+      evaluatorDescription: 'تتولى الكلية صفتها الأكاديمية في تقييم المؤتمر وأبحاثه.',
+      evaluatorBadge: 'جهة مُقيِّمة',
     },
     awards: {
       title: 'الجوائز والتكريمات',
@@ -430,9 +433,7 @@ themeTitle: '« عنوانٌ استمدّ وجوده من سبل خدمة الد
       editionBadge: 'The 7th International Conference — Current Edition',
       editionTitle: 'The 7th International Conference',
       themeTitle: 'A Title Inspired by Serving Faith, Humanity, and the Nation',
-      eyebrow: 'College of Islamic Sciences — Warith Al-Anbiyaa University (AS)',
-      subtitle:
-        'Part of the Islamic Life Conference series — an intellectual, cultural, and academic forum addressing identity, education, and Islamic society amid contemporary challenges.',
+      eyebrow: 'Under the auspices of the Holy Husayni Shrine and the presidency of Warith Al-Anbiya University, the College of Islamic Sciences is holding its annual conference.',
       ctaPrimary: 'Submit Paper for 7th Edition',
       ctaRules: 'Paper Submission Requirements',
       ctaCommittees: 'Committees',
@@ -690,8 +691,12 @@ themeTitle: '« عنوانٌ استمدّ وجوده من سبل خدمة الد
       openPhoto: 'View photo',
     },
     sponsors: {
-      title: 'Sponsors',
-      subtitle: 'Held under the patronage and partnership of the following',
+      title: 'Supporting Entities',
+  //    subtitle: 'Conference partners and its academic evaluating body',
+     // supportingTitle: 'Supporting Organizations',
+      evaluatorTitle: 'Evaluating Body',
+      evaluatorDescription: 'The college provides the conference and its research with academic evaluation.',
+      evaluatorBadge: 'Evaluating Body',
     },
     awards: {
       title: 'Awards & Recognition',
