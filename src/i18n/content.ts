@@ -40,6 +40,8 @@ export const content = {
       previousVersionsLabel: 'النسخ السابقة',
       submit: 'قدّم بحثك',
       archive: 'الأرشيف',
+      galleryLabel: 'المعرض',
+      openSubmenu: 'فتح القائمة الفرعية',
     },
     seventhConference: {
       editionBadge: 'المؤتمر الدولي السابع — الدورة الحالية',
@@ -328,8 +330,19 @@ themeTitle: '« عنوانٌ استمدّ وجوده من سبل خدمة الد
       next: 'التالي',
       close: 'إغلاق',
     },
+    galleryPage: {
+      eyebrow: 'النسخ الرابعة والخامسة والسادسة',
+      title: 'معرض الصور',
+      description: 'لحظاتٌ حيّة من جلسات المؤتمر ولقاءاته، توثّق مسيرة «الإسلام حياة» وحضور ضيوفه وباحثيه في رحاب جامعة وارث الأنبياء (ع).',
+      browse: 'تصفّح الصور',
+      home: 'الرئيسية',
+      photosCount: 'صورة',
+      gridTitle: 'لقطات من المؤتمر',
+      gridSubtitle: 'اضغط على أي صورة لعرضها بحجم كبير والتنقل بين الصور.',
+      openPhoto: 'عرض الصورة',
+    },
     sponsors: {
-      title: 'الجهاة الراعية',
+      title: 'الجهات الداعمة',
       subtitle: 'برعاية وشراكة الجهتين الآتيتين',
     },
     awards: {
@@ -410,6 +423,8 @@ themeTitle: '« عنوانٌ استمدّ وجوده من سبل خدمة الد
       previousVersionsLabel: 'Previous Versions',
       submit: 'Submit Your Research',
       archive: 'Archive',
+      galleryLabel: 'Gallery',
+      openSubmenu: 'Open submenu',
     },
     seventhConference: {
       editionBadge: 'The 7th International Conference — Current Edition',
@@ -662,6 +677,17 @@ themeTitle: '« عنوانٌ استمدّ وجوده من سبل خدمة الد
       previous: 'Previous',
       next: 'Next',
       close: 'Close',
+    },
+    galleryPage: {
+      eyebrow: 'The 4th, 5th and 6th Editions',
+      title: 'Photo Gallery',
+      description: 'Living moments from the conference sessions and meetings, documenting the journey of “Islam is Life” and its guests and researchers at Warith Al-Anbiyaa University.',
+      browse: 'Browse Photos',
+      home: 'Home',
+      photosCount: 'photos',
+      gridTitle: 'Conference Moments',
+      gridSubtitle: 'Tap any photo to view it in full size and move between photos.',
+      openPhoto: 'View photo',
     },
     sponsors: {
       title: 'Sponsors',

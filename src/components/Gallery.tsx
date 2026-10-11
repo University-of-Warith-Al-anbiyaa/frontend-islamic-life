@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import Reveal from "./Reveal";
 import HighlightedConferenceText from "./HighlightedConferenceText";
-
-const photos = [
-	"/معرض.jpg",
-	...Array.from({ length: 20 }, (_, index) => `/معرض${index + 2}.jpg`),
-];
+import Lightbox from "./Lightbox";
+import { galleryPhotos as photos } from "../config/gallery";
 
 export default function Gallery() {
 	const { t } = useApp();
@@ -57,13 +54,6 @@ export default function Gallery() {
 		setCarouselIndex((index) => (index >= lastIndex ? 0 : index + 1));
 	const showPrevious = () =>
 		setCarouselIndex((index) => (index <= 0 ? lastIndex : index - 1));
-
-	const next = () =>
-		setActive((a) => (a === null ? null : (a + 1) % photos.length));
-	const prev = () =>
-		setActive((a) =>
-			a === null ? null : (a - 1 + photos.length) % photos.length,
-		);
 
 	return (
 		<section className="px-5 py-24 lg:px-10 lg:py-32">
@@ -123,57 +113,12 @@ export default function Gallery() {
 				</div>
 			</div>
 
-			<AnimatePresence>
-				{active !== null && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						className="fixed inset-0 z-[90] flex items-center justify-center bg-ink-950/95 p-6"
-						onClick={() => setActive(null)}
-					>
-						<button
-							onClick={(e) => {
-								e.stopPropagation();
-								setActive(null);
-							}}
-							className="absolute end-6 top-6 text-paper/80 hover:text-paper"
-							aria-label={t.gallery.close}
-						>
-							<X size={26} />
-						</button>
-						<button
-							onClick={(e) => {
-								e.stopPropagation();
-								prev();
-							}}
-							className="absolute start-4 text-paper/70 hover:text-paper"
-							aria-label={t.gallery.previous}
-						>
-							<ChevronLeft size={30} />
-						</button>
-						<motion.img
-							key={active}
-							initial={{ opacity: 0, scale: 0.96 }}
-							animate={{ opacity: 1, scale: 1 }}
-							src={photos[active]}
-							alt=""
-							onClick={(e) => e.stopPropagation()}
-							className="max-h-[80vh] max-w-[85vw] rounded-lg object-contain"
-						/>
-						<button
-							onClick={(e) => {
-								e.stopPropagation();
-								next();
-							}}
-							className="absolute end-4 text-paper/70 hover:text-paper"
-							aria-label={t.gallery.next}
-						>
-							<ChevronRight size={30} />
-						</button>
-					</motion.div>
-				)}
-			</AnimatePresence>
+			<Lightbox
+				photos={photos}
+				index={active}
+				onClose={() => setActive(null)}
+				onChange={setActive}
+			/>
 		</section>
 	);
 }

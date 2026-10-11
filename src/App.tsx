@@ -7,6 +7,8 @@ import CountdownModal from "./components/CountdownModal";
 import ScrollToTop from "./components/ScrollToTop";
 import HomePage from "./pages/HomePage";
 import SeventhConferencePage from "./pages/SeventhConferencePage";
+import GalleryPage from "./pages/GalleryPage";
+import { GALLERY_PATH } from "./config/gallery";
 
 export default function App() {
 	const [loading, setLoading] = useState(true);
@@ -34,6 +36,7 @@ export default function App() {
 			<Routes>
 				<Route path="/" element={<HomePage />} />
 				<Route path="/seventh-conference" element={<SeventhConferencePage />} />
+				<Route path={GALLERY_PATH} element={<GalleryPage />} />
 				<Route path="*" element={<HomePage />} />
 			</Routes>
 		</>

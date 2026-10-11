@@ -103,3 +103,47 @@ body {
   background-size: 28px 28px, 28px 28px, 28px 28px;
   color: theme('colors.gold.400');
 }
+
+/* ===== صفحة المعرض: أشكال هندسية وقصّات قطرية ===== */
+/* فسيفساء المعيّنات في خلفية الـ Hero: شبكة مربعات مدوّرة 45°، والفواصل بينها خطوط قطرية داكنة */
+.gallery-mosaic {
+  --mosaic-gap: 5px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  grid-template-columns: repeat(7, var(--tile));
+  gap: var(--mosaic-gap);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.gallery-mosaic-tile {
+  position: relative;
+  width: var(--tile);
+  height: var(--tile);
+  overflow: hidden;
+  background-color: theme('colors.ink.800');
+}
+/* الصورة مدوّرة بالعكس لتبقى معتدلة، ومكبّرة بنسبة √2 لتغطي المعيّن كاملاً */
+.gallery-mosaic-tile img {
+  position: absolute;
+  left: -21%;
+  top: -21%;
+  width: 142%;
+  height: 142%;
+  max-width: none;
+  object-fit: cover;
+  transform: rotate(-45deg);
+}
+
+/* بطاقات الشبكة بزوايا مشطوفة */
+.gallery-card {
+  --cut: 1.25rem;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut))
+  );
+}

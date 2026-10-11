@@ -1,10 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, Moon, Sun, ChevronDown, Info } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+	Menu,
+	X,
+	Moon,
+	Sun,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	Info,
+	Images,
+} from "lucide-react";
+import {
+	Link,
+	useLocation,
+	useNavigate,
+	type LinkProps,
+} from "react-router-dom";
 import { createPortal } from "react-dom";
 import { useApp } from "../context/AppContext";
 import ConferenceLogo from "./ConferenceLogo";
+import { GALLERY_EDITION_INDEXES, GALLERY_PATH } from "../config/gallery";
 
 export default function Navbar() {
 	const {
@@ -22,12 +38,22 @@ export default function Navbar() {
 	const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<
 		(typeof t.nav.previousVersionsDetails)[number] | null
 	>(null);
+	// فهرس النسخة التي قائمتها الفرعية (المعرض) مفتوحة حالياً
+	const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
 	const navbarRef = useRef<HTMLElement>(null);
+	const previousVersionsTriggerRef = useRef<HTMLButtonElement>(null);
+	const previousVersionsMenuRef = useRef<HTMLDivElement>(null);
 	const location = useLocation();
 	const navigate = useNavigate();
 	const scrolledTextClass = theme === "dark" ? "text-white" : "text-black";
+	const isRtl = t.dir === "rtl";
+	const SubmenuArrow = isRtl ? ChevronLeft : ChevronRight;
+	const versionSubmenuItems = [
+		{ label: t.nav.galleryLabel, to: GALLERY_PATH, icon: Images },
+	];
 
 	const isSeventhPage = location.pathname.startsWith("/seventh-conference");
+	const isGalleryPage = location.pathname.startsWith(GALLERY_PATH);
 	const activeLinks = isSeventhPage
 		? t.seventhConference.navLinks.filter(
 				(link) => link.id !== "contact" && link.id !== "seventh-hero",
@@ -55,7 +81,10 @@ export default function Navbar() {
 	}, []);
 
 	useEffect(() => {
-		if (!previousVersionsOpen) return;
+		if (!previousVersionsOpen) {
+			setOpenSubmenu(null);
+			return;
+		}
 
 		const closeOnOutsideClick = (event: PointerEvent) => {
 			if (!navbarRef.current?.contains(event.target as Node)) {
@@ -67,6 +96,34 @@ export default function Navbar() {
 		return () =>
 			document.removeEventListener("pointerdown", closeOnOutsideClick);
 	}, [previousVersionsOpen]);
+
+	// Escape: يغلق القائمة الفرعية أولاً ثم قائمة النسخ السابقة، ويعيد التركيز للعنصر الأب
+	useEffect(() => {
+		if (!previousVersionsOpen) return;
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== "Escape") return;
+			const focusWasInside = navbarRef.current?.contains(
+				document.activeElement,
+			);
+			if (openSubmenu !== null) {
+				const parentIndex = openSubmenu;
+				setOpenSubmenu(null);
+				if (focusWasInside) focusVersionItem(parentIndex);
+			} else {
+				setPreviousVersionsOpen(false);
+				if (focusWasInside) previousVersionsTriggerRef.current?.focus();
+			}
+		};
+
+		document.addEventListener("keydown", onKeyDown);
+		return () => document.removeEventListener("keydown", onKeyDown);
+	}, [previousVersionsOpen, openSubmenu]);
+
+	useEffect(() => {
+		setPreviousVersionsOpen(false);
+		setOpen(false);
+	}, [location.pathname]);
 
 	useEffect(() => {
 		if (!selectedPreviousVersion) return;
@@ -90,6 +147,88 @@ export default function Navbar() {
 		setOpen(false);
 	};
 
+	const hasVersionSubmenu = (index: number) =>
+		GALLERY_EDITION_INDEXES.includes(index);
+
+	const toggleVersionSubmenu = (index: number) =>
+		setOpenSubmenu((current) => (current === index ? null : index));
+
+	const closeAllMenus = () => {
+		setOpenSubmenu(null);
+		setPreviousVersionsOpen(false);
+		setOpen(false);
+	};
+
+	const handleSubmenuItemClick: LinkProps["onClick"] = () => {
+		closeAllMenus();
+		window.scrollTo({ top: 0 });
+	};
+
+	// تنتظر إطار رسم واحد حتى تظهر العناصر بعد فتح القائمة
+	const focusInMenu = (selector: string) =>
+		window.requestAnimationFrame(() =>
+			previousVersionsMenuRef.current
+				?.querySelector<HTMLElement>(selector)
+				?.focus(),
+		);
+
+	const focusVersionItem = (index: number) =>
+		focusInMenu(`[data-version-index="${index}"]`);
+
+	const handlePreviousVersionsTriggerKeyDown = (
+		event: React.KeyboardEvent<HTMLButtonElement>,
+	) => {
+		if (["Enter", " ", "ArrowDown"].includes(event.key)) {
+			event.preventDefault();
+			setPreviousVersionsOpen(true);
+			focusInMenu("[data-version-index]");
+		}
+	};
+
+	const handlePreviousVersionsMenuKeyDown = (
+		event: React.KeyboardEvent<HTMLDivElement>,
+	) => {
+		const target = event.target as HTMLElement;
+		const towardSubmenu = isRtl ? "ArrowLeft" : "ArrowRight";
+		const awayFromSubmenu = isRtl ? "ArrowRight" : "ArrowLeft";
+		const submenuOwner = target.closest<HTMLElement>("[data-submenu-owner]");
+		const inSubmenu = target.hasAttribute("data-submenu-item");
+
+		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+			event.preventDefault();
+			const selector = inSubmenu
+				? "[data-submenu-item]"
+				: "[data-version-index]";
+			const scope = inSubmenu ? submenuOwner : previousVersionsMenuRef.current;
+			const items = Array.from(
+				scope?.querySelectorAll<HTMLElement>(selector) ?? [],
+			);
+			const current = items.indexOf(target);
+			const step = event.key === "ArrowDown" ? 1 : -1;
+			items[(current + step + items.length) % items.length]?.focus();
+			if (!inSubmenu) setOpenSubmenu(null);
+		} else if (event.key === towardSubmenu && submenuOwner && !inSubmenu) {
+			event.preventDefault();
+			setOpenSubmenu(Number(submenuOwner.dataset.submenuOwner));
+			window.requestAnimationFrame(() =>
+				submenuOwner.querySelector<HTMLElement>("[data-submenu-item]")?.focus(),
+			);
+		} else if (event.key === awayFromSubmenu && inSubmenu && submenuOwner) {
+			event.preventDefault();
+			const parentIndex = Number(submenuOwner.dataset.submenuOwner);
+			setOpenSubmenu(null);
+			focusVersionItem(parentIndex);
+		}
+	};
+
+	const handlePreviousVersionsBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+		// النقر خارج القائمة يعالجه مستمع pointerdown؛ هنا نغلق فقط عند انتقال التركيز بـ Tab لعنصر خارجها
+		const nextFocus = event.relatedTarget as Node | null;
+		if (nextFocus && !event.currentTarget.contains(nextFocus)) {
+			setPreviousVersionsOpen(false);
+		}
+	};
+
 	const scrollTo = (id: string) => {
 		setOpen(false);
 		const element = document.getElementById(id);
@@ -109,7 +248,15 @@ export default function Navbar() {
 				element.scrollIntoView({ behavior: "smooth", block: "start" });
 			}
 		} else {
-			if (isSeventhPage && id === "hero") {
+			if (isGalleryPage) {
+				// أقسام الرئيسية غير موجودة في صفحة المعرض: ننتقل للرئيسية ثم نمرّر للقسم
+				navigate("/");
+				window.setTimeout(() => {
+					document
+						.getElementById(id)
+						?.scrollIntoView({ behavior: "smooth", block: "start" });
+				}, 150);
+			} else if (isSeventhPage && id === "hero") {
 				navigate("/");
 			} else if (
 				!isSeventhPage &&
@@ -213,10 +360,14 @@ export default function Navbar() {
 						onMouseLeave={() => {
 							if (supportsHover()) setPreviousVersionsOpen(false);
 						}}
+						onBlur={handlePreviousVersionsBlur}
 					>
 						<button
+							ref={previousVersionsTriggerRef}
 							type="button"
 							onClick={togglePreviousVersionsOnTouch}
+							onKeyDown={handlePreviousVersionsTriggerKeyDown}
+							aria-haspopup="menu"
 							aria-expanded={previousVersionsOpen}
 							className={`flex items-center gap-1.5 whitespace-nowrap py-1.5 text-[14px] font-medium transition-colors hover:text-gold-500 ${
 								scrolled ? scrolledTextClass : "text-paper"
@@ -235,22 +386,123 @@ export default function Navbar() {
 									animate={{ opacity: 1, y: 0 }}
 									exit={{ opacity: 0, y: -6 }}
 									transition={{ duration: 0.18 }}
-									className="absolute end-0 top-full z-50 w-72 overflow-hidden rounded-lg border border-ink-900/10 bg-paper py-1 shadow-lg dark:border-paper/10 dark:bg-ink-950"
+									ref={previousVersionsMenuRef}
+									onKeyDown={handlePreviousVersionsMenuKeyDown}
+									className="absolute end-0 top-full z-50 w-72 rounded-lg border border-ink-900/10 bg-paper py-1 shadow-lg dark:border-paper/10 dark:bg-ink-950"
 								>
-									{t.nav.previousVersions.map((version, index) => (
-										<button
-											key={version}
-											type="button"
-											onClick={() => openPreviousVersion(index)}
-											className={`block w-full px-4 py-2.5 text-start text-[14px] transition-colors ${
-												scrolled
-													? `${scrolledTextClass} hover:bg-black/5`
-													: "text-ink-900 hover:bg-ink-900/5 dark:text-paper dark:hover:bg-paper/5"
-											}`}
-										>
-											{version}
-										</button>
-									))}
+									{t.nav.previousVersions.map((version, index) => {
+										const itemClass = `block w-full px-4 py-2.5 text-start text-[14px] transition-colors ${
+											scrolled
+												? `${scrolledTextClass} hover:bg-black/5`
+												: "text-ink-900 hover:bg-ink-900/5 dark:text-paper dark:hover:bg-paper/5"
+										}`;
+
+										if (!hasVersionSubmenu(index)) {
+											return (
+												<button
+													key={version}
+													type="button"
+													data-version-index={index}
+													onClick={() => openPreviousVersion(index)}
+													className={itemClass}
+												>
+													{version}
+												</button>
+											);
+										}
+
+										const submenuOpen = openSubmenu === index;
+										return (
+											<div
+												key={version}
+												data-submenu-owner={index}
+												className="relative"
+												onMouseEnter={() => {
+													if (supportsHover()) setOpenSubmenu(index);
+												}}
+												onMouseLeave={() => {
+													if (supportsHover()) setOpenSubmenu(null);
+												}}
+											>
+												<div
+													className={`flex items-stretch transition-colors ${
+														submenuOpen
+															? "bg-gold-500/10"
+															: ""
+													}`}
+												>
+													<button
+														type="button"
+														data-version-index={index}
+														onClick={() => openPreviousVersion(index)}
+														className={`${itemClass} flex-1 !pe-1`}
+													>
+														{version}
+													</button>
+													<button
+														type="button"
+														onClick={() => toggleVersionSubmenu(index)}
+														aria-haspopup="menu"
+														aria-expanded={submenuOpen}
+														aria-label={`${t.nav.openSubmenu}: ${version}`}
+														className={`flex w-9 shrink-0 items-center justify-center transition-colors hover:text-gold-500 ${
+															submenuOpen
+																? "text-gold-500"
+																: scrolled
+																	? scrolledTextClass
+																	: "text-ink-900/60 dark:text-paper/60"
+														}`}
+													>
+														<SubmenuArrow
+															size={15}
+															className={`transition-transform duration-200 ${
+																submenuOpen
+																	? isRtl
+																		? "-translate-x-0.5 scale-125"
+																		: "translate-x-0.5 scale-125"
+																	: ""
+															}`}
+														/>
+													</button>
+												</div>
+												<AnimatePresence>
+													{submenuOpen && (
+														<motion.div
+															initial={{ opacity: 0, x: isRtl ? 6 : -6 }}
+															animate={{ opacity: 1, x: 0 }}
+															exit={{ opacity: 0, x: isRtl ? 6 : -6 }}
+															transition={{ duration: 0.16 }}
+															className="absolute start-full top-0 z-[60] ps-1.5"
+														>
+															<div
+																role="menu"
+																aria-label={version}
+																className="w-44 rounded-lg border border-gold-500/30 bg-paper py-1 shadow-xl dark:bg-ink-950"
+															>
+																{versionSubmenuItems.map((item) => (
+																	<Link
+																		key={item.to}
+																		to={item.to}
+																		role="menuitem"
+																		data-submenu-item=""
+																		onClick={handleSubmenuItemClick}
+																		className={`flex items-center gap-2 px-4 py-2.5 text-[14px] font-medium transition-colors hover:text-gold-500 ${
+																			scrolled
+																				? `${scrolledTextClass} hover:bg-black/5`
+																				: "text-ink-900 hover:bg-ink-900/5 dark:text-paper dark:hover:bg-paper/5"
+																		}`}
+																	>
+																		<item.icon size={15} className="text-gold-500" />
+																		{item.label}
+																	</Link>
+																))}
+															</div>
+														</motion.div>
+													)}
+												</AnimatePresence>
+											</div>
+										);
+									})}
 								</motion.div>
 							)}
 						</AnimatePresence>
@@ -405,7 +657,7 @@ export default function Navbar() {
 			</div>
 
 			{open && (
-				<div className="border-t border-ink-900/10 bg-paper px-5 py-4 dark:border-paper/10 dark:bg-ink-950 min-[1600px]:hidden">
+				<div className="max-h-[calc(100svh-5.5rem)] overflow-y-auto overscroll-contain border-t border-ink-900/10 bg-paper px-5 py-4 dark:border-paper/10 dark:bg-ink-950 min-[1600px]:hidden">
 					<div className="flex flex-col gap-1">
 						{activeLinks.map((link) => (
 							<button
@@ -474,22 +726,89 @@ export default function Navbar() {
 										exit={{ opacity: 0, height: 0 }}
 										className="mt-1 overflow-hidden rounded-md border border-ink-900/10 dark:border-paper/10"
 									>
-										{t.nav.previousVersions.map((version, index) => (
-											<button
-												key={version}
-												type="button"
-												onClick={() => {
-													openPreviousVersion(index);
-												}}
-												className={`block w-full px-4 py-2 text-start text-[14px] whitespace-nowrap transition-colors ${
-													scrolled
-														? `${scrolledTextClass} hover:bg-black/5`
-														: "text-ink-900 hover:bg-ink-900/5 dark:text-paper dark:hover:bg-paper/5"
-												}`}
-											>
-												{version}
-											</button>
-										))}
+										{t.nav.previousVersions.map((version, index) => {
+											const itemClass = `block w-full px-4 py-2 text-start text-[14px] whitespace-nowrap transition-colors ${
+												scrolled
+													? `${scrolledTextClass} hover:bg-black/5`
+													: "text-ink-900 hover:bg-ink-900/5 dark:text-paper dark:hover:bg-paper/5"
+											}`;
+
+											if (!hasVersionSubmenu(index)) {
+												return (
+													<button
+														key={version}
+														type="button"
+														onClick={() => {
+															openPreviousVersion(index);
+														}}
+														className={itemClass}
+													>
+														{version}
+													</button>
+												);
+											}
+
+											const submenuOpen = openSubmenu === index;
+											return (
+												<div key={version}>
+													<div
+														className={`flex items-stretch ${submenuOpen ? "bg-gold-500/10" : ""}`}
+													>
+														<button
+															type="button"
+															onClick={() => openPreviousVersion(index)}
+															className={`${itemClass} min-w-0 flex-1 overflow-hidden text-ellipsis`}
+														>
+															{version}
+														</button>
+														<button
+															type="button"
+															onClick={() => toggleVersionSubmenu(index)}
+															aria-expanded={submenuOpen}
+															aria-label={`${t.nav.openSubmenu}: ${version}`}
+															className={`flex w-11 shrink-0 items-center justify-center transition-colors ${
+																submenuOpen
+																	? "text-gold-500"
+																	: scrolled
+																		? scrolledTextClass
+																		: "text-ink-900/70 dark:text-paper/70"
+															}`}
+														>
+															<ChevronDown
+																size={16}
+																className={`transition-transform duration-200 ${submenuOpen ? "rotate-180" : ""}`}
+															/>
+														</button>
+													</div>
+													<AnimatePresence initial={false}>
+														{submenuOpen && (
+															<motion.div
+																initial={{ opacity: 0, height: 0 }}
+																animate={{ opacity: 1, height: "auto" }}
+																exit={{ opacity: 0, height: 0 }}
+																className="overflow-hidden"
+															>
+																{versionSubmenuItems.map((item) => (
+																	<Link
+																		key={item.to}
+																		to={item.to}
+																		onClick={handleSubmenuItemClick}
+																		className={`flex items-center gap-2 border-s-2 border-gold-500/60 py-2 pe-4 ps-8 text-[14px] font-medium transition-colors hover:text-gold-500 ${
+																			scrolled
+																				? `${scrolledTextClass} hover:bg-black/5`
+																				: "text-ink-900 hover:bg-ink-900/5 dark:text-paper dark:hover:bg-paper/5"
+																		}`}
+																	>
+																		<item.icon size={15} className="text-gold-500" />
+																		{item.label}
+																	</Link>
+																))}
+															</motion.div>
+														)}
+													</AnimatePresence>
+												</div>
+											);
+										})}
 									</motion.div>
 								)}
 							</AnimatePresence>
