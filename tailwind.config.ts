@@ -72,9 +72,15 @@ export default {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        awardsSweep: {
+          '0%': { left: '-50%', opacity: '0' },
+          '30%': { opacity: '1' },
+          '100%': { left: '130%', opacity: '0' },
+        },
       },
       animation: {
         fadeUp: 'fadeUp 0.7s ease forwards',
+        awardsSweep: 'awardsSweep 0.9s ease-out',
       },
     },
   },

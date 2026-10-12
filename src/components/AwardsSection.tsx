@@ -1,20 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-	ArrowUpRight,
-	Award as AwardIcon,
-	CalendarDays,
-	X,
-} from "lucide-react";
+import { ArrowUpRight, Trophy, X } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { awards, type RecognitionAward } from "../config/awards";
-
-const awardYears = ["2025", "2024", "2023"];
+import { CardHeading, EASE, RevealCard, itemVariants } from "./motionKit";
 
 export default function AwardsSection() {
 	const { t, lang } = useApp();
-	const [yearFilter, setYearFilter] = useState("all");
 	const [selectedAward, setSelectedAward] = useState<RecognitionAward | null>(
 		null,
 	);
@@ -23,11 +16,7 @@ export default function AwardsSection() {
 	const triggerRef = useRef<HTMLElement | null>(null);
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const copy = t.awards;
-
-	const filteredAwards =
-		yearFilter === "all"
-			? awards
-			: awards.filter((award) => award.year === yearFilter);
+	const subtitle = "subtitle" in copy ? copy.subtitle : undefined;
 
 	const awardName = (award: RecognitionAward) =>
 		lang === "ar" ? award.titleAr : award.titleEn;
@@ -93,127 +82,63 @@ export default function AwardsSection() {
 	const closeAward = () => setSelectedAward(null);
 
 	return (
-		<section
-			id="awards"
-			dir={t.dir}
-			className="border-y border-ink-900/10 px-5 py-20 dark:border-paper/10 lg:px-10"
-		>
-			<div className="mx-auto max-w-7xl">
-				<div className="text-center">
-					<h2 className="font-display text-2xl text-ink-900 dark:text-paper sm:text-3xl">
-						{copy.title}
-					</h2>
-					<p className="mt-2 text-sm text-slate-ink dark:text-ink-200 sm:text-base">
-						{copy.subtitle}
-					</p>
-					<p className="mx-auto mt-4 w-fit rounded-full border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-xs font-semibold text-gold-700 dark:text-gold-300">
-						{copy.sampleData}
-					</p>
-				</div>
+		<section id="awards" dir={t.dir} className="flex h-full">
+			<RevealCard className="flex h-full w-full flex-col p-6 sm:p-8 lg:p-12">
+				<CardHeading icon={Trophy} title={copy.title} lead={subtitle} />
 
 				<div
-					className="mt-8 flex flex-wrap justify-center gap-2"
-					role="group"
-					aria-label={copy.filterLabel}
+					className={`mt-10 grid gap-5 ${
+						awards.length > 1 ? "lg:grid-cols-2" : "mx-auto w-full max-w-3xl"
+					}`}
 				>
-					{["all", ...awardYears].map((year) => {
-						const selected = yearFilter === year;
-						return (
+					{awards.map((award) => (
+						<motion.article
+							key={award.id}
+							variants={itemVariants}
+							className="flex flex-col rounded-xl border border-gold-500/30 bg-gold-500/10 p-6 text-center transition-colors duration-300 hover:border-gold-500/60 motion-reduce:transition-none sm:p-8"
+						>
+							{award.image && (
+								<img
+									src={award.image}
+									alt={awardName(award)}
+									className="mb-5 h-32 w-full rounded-md object-contain"
+									loading="lazy"
+								/>
+							)}
+
+							<h3 className="font-display text-2xl leading-snug text-ink-900 dark:text-paper">
+								{awardName(award)}
+							</h3>
+							<p className="mt-2 text-sm font-medium text-gold-700 dark:text-gold-300">
+								{organizationName(award)}
+							</p>
+							<p className="mt-5 text-base font-semibold leading-relaxed text-ink-900 dark:text-paper sm:text-lg">
+								{description(award)}
+							</p>
+
+							<div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-gold-500/20 pt-4">
+								<span className="rounded-full border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-sm font-semibold text-gold-700 dark:text-gold-300">
+									{categoryName(award)}
+								</span>
+							</div>
+
 							<button
-								key={year}
 								type="button"
-								aria-pressed={selected}
-								onClick={() => setYearFilter(year)}
-								className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 motion-reduce:transition-none ${
-									selected
-										? "border-gold-500 bg-gold-500 text-ink-950"
-										: "border-ink-900/15 text-ink-800 hover:border-gold-500/60 dark:border-paper/20 dark:text-paper"
-								}`}
+								onClick={(event) => openAward(award, event)}
+								aria-label={`${copy.viewDetails}: ${awardName(award)}`}
+								className="mx-auto mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-gold-500/50 bg-gold-500/10 px-5 py-2.5 text-sm font-semibold text-gold-700 transition-colors hover:border-gold-500 hover:bg-gold-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 dark:text-gold-300 motion-reduce:transition-none"
 							>
-								{year === "all" ? copy.allYears : year}
+								{copy.viewDetails}
+								<ArrowUpRight
+									size={16}
+									aria-hidden="true"
+									className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none"
+								/>
 							</button>
-						);
-					})}
+						</motion.article>
+					))}
 				</div>
-
-				<p className="sr-only" aria-live="polite" aria-atomic="true">
-					{filteredAwards.length}
-				</p>
-
-				<motion.div
-					layout
-					className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-				>
-					<AnimatePresence initial={false} mode="popLayout">
-						{filteredAwards.map((award, index) => (
-							<motion.article
-								key={award.id}
-								layout={!prefersReducedMotion}
-								initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
-								transition={{
-									duration: prefersReducedMotion ? 0 : 0.24,
-									delay: prefersReducedMotion ? 0 : index * 0.04,
-								}}
-								className="group flex h-full flex-col rounded-lg border border-ink-900/10 bg-paper p-5 shadow-[0_8px_30px_rgba(15,27,61,0.05)] transition-all hover:-translate-y-1 hover:border-gold-400/60 hover:shadow-[0_14px_34px_rgba(15,27,61,0.1)] motion-reduce:transform-none motion-reduce:transition-none dark:border-paper/10 dark:bg-ink-950 sm:p-6"
-							>
-								<div className="flex items-start justify-between gap-4">
-									<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-600 dark:text-gold-400">
-										<AwardIcon
-											size={24}
-											aria-hidden="true"
-											className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110 motion-reduce:transition-none"
-										/>
-									</div>
-									<span className="rounded-full border border-gold-500/25 px-2.5 py-1 text-xs font-semibold text-gold-700 dark:text-gold-300">
-										{copy.sampleBadge}
-									</span>
-								</div>
-
-								{award.image && (
-									<img
-										src={award.image}
-										alt={awardName(award)}
-										className="mt-5 h-32 w-full rounded-md object-contain"
-										loading="lazy"
-									/>
-								)}
-
-								<h3 className="mt-5 font-display text-xl leading-snug text-ink-900 dark:text-paper">
-									{awardName(award)}
-								</h3>
-								<p className="mt-2 text-sm text-slate-ink dark:text-ink-200">
-									{organizationName(award)}
-								</p>
-								<p className="mt-3 text-sm leading-relaxed text-slate-ink dark:text-ink-200">
-									{description(award)}
-								</p>
-
-								<div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-ink-900/10 pt-4 dark:border-paper/10">
-									<span className="inline-flex items-center gap-2 text-sm font-medium text-ink-800 dark:text-ink-100">
-										<CalendarDays size={16} aria-hidden="true" />
-										{award.year}
-									</span>
-									<span className="text-sm text-slate-ink dark:text-ink-200">
-										{categoryName(award)}
-									</span>
-								</div>
-
-								<button
-									type="button"
-									onClick={(event) => openAward(award, event)}
-									aria-label={`${copy.viewDetails}: ${awardName(award)}`}
-									className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-gold-500/35 px-4 py-2 text-sm font-semibold text-gold-700 transition-colors hover:border-gold-500 hover:bg-gold-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 dark:text-gold-300 motion-reduce:transition-none"
-								>
-									{copy.viewDetails}
-									<ArrowUpRight size={16} aria-hidden="true" />
-								</button>
-							</motion.article>
-						))}
-					</AnimatePresence>
-				</motion.div>
-			</div>
+			</RevealCard>
 
 			{typeof document !== "undefined" &&
 				createPortal(
@@ -248,20 +173,33 @@ export default function AwardsSection() {
 											? undefined
 											: { opacity: 0, y: 12, scale: 0.98 }
 									}
-									transition={{ duration: prefersReducedMotion ? 0 : 0.22 }}
+									transition={
+										prefersReducedMotion
+											? { duration: 0 }
+											: { type: "spring", stiffness: 320, damping: 28 }
+									}
 								>
 									<div className="flex items-start justify-between gap-4 border-b border-ink-900/10 px-6 py-5 dark:border-paper/10 sm:px-8">
 										<div className="flex items-start gap-3">
-											<div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-500/15 text-gold-600 dark:text-gold-400">
-												<AwardIcon size={20} aria-hidden="true" />
-											</div>
+											<motion.div
+												className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-500/15 text-gold-600 dark:text-gold-400"
+												initial={
+													prefersReducedMotion ? false : { scale: 0, rotate: -90 }
+												}
+												animate={{ scale: 1, rotate: 0 }}
+												transition={{
+													type: "spring",
+													stiffness: 260,
+													damping: 15,
+													delay: 0.15,
+												}}
+											>
+												<Trophy size={20} aria-hidden="true" />
+											</motion.div>
 											<div>
-												<p className="text-xs font-semibold text-gold-700 dark:text-gold-300">
-													{copy.sampleBadge}
-												</p>
 												<h2
 													id="award-dialog-title"
-													className="mt-1 font-display text-2xl text-ink-900 dark:text-paper"
+													className="font-display text-2xl text-ink-900 dark:text-paper"
 												>
 													{awardName(selectedAward)}
 												</h2>
@@ -277,7 +215,12 @@ export default function AwardsSection() {
 											<X size={19} aria-hidden="true" />
 										</button>
 									</div>
-									<div className="space-y-5 px-6 py-6 sm:px-8 sm:py-8">
+									<motion.div
+										className="space-y-5 px-6 py-6 sm:px-8 sm:py-8"
+										initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ duration: 0.4, delay: 0.2, ease: EASE }}
+									>
 										{selectedAward.image && (
 											<img
 												src={selectedAward.image}
@@ -292,14 +235,6 @@ export default function AwardsSection() {
 												</dt>
 												<dd className="mt-1 font-semibold text-ink-900 dark:text-paper">
 													{organizationName(selectedAward)}
-												</dd>
-											</div>
-											<div>
-												<dt className="text-xs font-medium text-slate-ink dark:text-ink-200">
-													{copy.yearLabel}
-												</dt>
-												<dd className="mt-1 font-semibold text-ink-900 dark:text-paper">
-													{selectedAward.year}
 												</dd>
 											</div>
 											<div className="sm:col-span-2">
@@ -317,7 +252,7 @@ export default function AwardsSection() {
 										>
 											{description(selectedAward)}
 										</p>
-									</div>
+									</motion.div>
 								</motion.div>
 							</motion.div>
 						)}

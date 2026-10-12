@@ -32,13 +32,13 @@ export default function HomePage() {
 				<ConferenceInfo />
 				<About />
 				<Objectives />
-				<div className="mx-auto grid w-full max-w-7xl items-stretch gap-6 px-5 py-24 lg:grid-cols-2 lg:px-10 lg:py-32">
-					<FAQ />
+				<div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-5 py-24 lg:gap-10 lg:px-10 lg:py-32">
+					<FAQ wide />
+					<AwardsSection />
 					<CallForPapers />
 				</div>
 				<Gallery />
 				<Sponsors />
-				<AwardsSection />
 				<VenueSection />
 			</main>
 			<Footer />

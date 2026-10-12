@@ -1,26 +1,37 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import { itemVariants } from "./motionKit";
 
 export default function Accordion({
 	items,
+	columns = 1,
 }: {
 	items: readonly { q: string; a: string }[];
+	columns?: 1 | 2;
 }) {
 	const [open, setOpen] = useState<number | null>(0);
 
 	return (
-		<div className="space-y-3">
+		<div
+			className={`grid gap-3 ${columns === 2 ? "lg:grid-cols-2 lg:items-start" : ""}`}
+		>
 			{items.map((item, i) => {
 				const isOpen = open === i;
 				return (
-					<div
+					<motion.div
 						key={item.q}
-						className={`overflow-hidden rounded-xl border transition-colors duration-300 ${
+						variants={itemVariants}
+						className={`relative overflow-hidden rounded-xl border transition-colors duration-300 ${
 							isOpen
 								? "border-gold-500/45 bg-gold-500/[0.06] dark:border-gold-400/35 dark:bg-gold-500/[0.08]"
 								: "border-ink-900/10 bg-paper/70 hover:border-gold-500/30 hover:bg-gold-500/[0.04] dark:border-paper/10 dark:bg-ink-900/40 dark:hover:border-gold-400/25 dark:hover:bg-gold-500/[0.05]"
 						}`}
 					>
+						<span
+							aria-hidden="true"
+							className={`absolute inset-y-3 start-0 w-1 origin-center rounded-full bg-gold-500 transition-transform duration-300 motion-reduce:transition-none ${isOpen ? "scale-y-100" : "scale-y-0"}`}
+						/>
 						<button
 							onClick={() => setOpen(isOpen ? null : i)}
 							aria-expanded={isOpen}
@@ -31,7 +42,7 @@ export default function Accordion({
 							</span>
 							<Plus
 								size={18}
-								className={`shrink-0 text-gold-500 transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}
+								className={`shrink-0 text-gold-500 transition-transform duration-300 motion-reduce:transition-none ${isOpen ? "rotate-45" : ""}`}
 							/>
 						</button>
 						<div className={`accordion-panel ${isOpen ? "open" : ""}`}>
@@ -41,7 +52,7 @@ export default function Accordion({
 								</p>
 							</div>
 						</div>
-					</div>
+					</motion.div>
 				);
 			})}
 		</div>

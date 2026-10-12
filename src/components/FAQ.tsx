@@ -1,25 +1,26 @@
+import { HelpCircle } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import Reveal from "./Reveal";
 import Accordion from "./Accordion";
+import { CardHeading, RevealCard } from "./motionKit";
 
-export default function FAQ() {
+export default function FAQ({ wide = false }: { wide?: boolean }) {
 	const { t } = useApp();
 
 	return (
 		<section id="faq" className="flex h-full">
-			<div className="flex h-full w-full flex-col rounded-2xl border border-gold-500/25 bg-paper p-6 shadow-[0_16px_45px_rgba(15,27,61,0.1)] dark:border-gold-400/20 dark:bg-ink-950 sm:p-8">
-				<Reveal>
-					<h2 className="font-display text-3xl leading-tight text-ink-900 dark:text-paper sm:text-4xl">
-						{t.faq.title}
-					</h2>
-					<p className="mt-3 text-justify text-base leading-relaxed text-slate-ink dark:text-ink-200">
-						{t.faq.subtitle}
-					</p>
-				</Reveal>
-				<Reveal delay={100} className="mt-8 flex-1">
-					<Accordion items={t.faq.items} />
-				</Reveal>
-			</div>
+			<RevealCard
+				lift={false}
+				className="flex h-full w-full flex-col p-6 sm:p-8 lg:p-12"
+			>
+				<CardHeading
+					icon={HelpCircle}
+					title={t.faq.title}
+					lead={t.faq.subtitle}
+				/>
+				<div className="mt-10 flex-1">
+					<Accordion items={t.faq.items} columns={wide ? 2 : 1} />
+				</div>
+			</RevealCard>
 		</section>
 	);
 }
