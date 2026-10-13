@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import ConferenceInfo from "../components/ConferenceInfo";
+import HomeInfo from "../components/home/HomeInfo";
 import About from "../components/About";
-import Objectives from "../components/Objectives";
-import CallForPapers from "../components/CallForPapers";
-import FAQ from "../components/FAQ";
+import HomeObjectives from "../components/home/HomeObjectives";
+import HomeFaq from "../components/home/HomeFaq";
+import AwardsSection from "../components/AwardsSection";
+import HomeCallForPapers from "../components/home/HomeCallForPapers";
 import Gallery from "../components/Gallery";
 import Sponsors from "../components/Sponsors";
-import AwardsSection from "../components/AwardsSection";
-import VenueSection from "../components/Venue";
+import HomeVenue from "../components/home/HomeVenue";
 import Footer from "../components/Footer";
 import { useApp } from "../context/AppContext";
 
@@ -29,17 +29,15 @@ export default function HomePage() {
 			<Navbar />
 			<main>
 				<Hero />
-				<ConferenceInfo />
+				<HomeInfo />
 				<About />
-				<Objectives />
-				<div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-5 py-24 lg:gap-10 lg:px-10 lg:py-32">
-					<FAQ wide />
-					<AwardsSection />
-					<CallForPapers />
-				</div>
+				<HomeObjectives />
+				<HomeFaq />
+				<AwardsSection />
+				<HomeCallForPapers />
 				<Gallery />
 				<Sponsors />
-				<VenueSection />
+				<HomeVenue />
 			</main>
 			<Footer />
 

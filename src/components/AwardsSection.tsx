@@ -4,7 +4,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Trophy, X } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { awards, type RecognitionAward } from "../config/awards";
-import { CardHeading, EASE, RevealCard, itemVariants } from "./motionKit";
+import { EASE } from "./motionKit";
+import Reveal from "./Reveal";
+import { SectionHeading, StarFrame, StarPattern } from "./home/kit";
 
 export default function AwardsSection() {
 	const { t, lang } = useApp();
@@ -17,6 +19,7 @@ export default function AwardsSection() {
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const copy = t.awards;
 	const subtitle = "subtitle" in copy ? copy.subtitle : undefined;
+	const singleAward = awards.length <= 1;
 
 	const awardName = (award: RecognitionAward) =>
 		lang === "ar" ? award.titleAr : award.titleEn;
@@ -82,63 +85,91 @@ export default function AwardsSection() {
 	const closeAward = () => setSelectedAward(null);
 
 	return (
-		<section id="awards" dir={t.dir} className="flex h-full">
-			<RevealCard className="flex h-full w-full flex-col p-6 sm:p-8 lg:p-12">
-				<CardHeading icon={Trophy} title={copy.title} lead={subtitle} />
+		<section
+			id="awards"
+			dir={t.dir}
+			className="relative overflow-hidden bg-gold-50/70 px-5 py-24 dark:bg-ink-900/50 lg:px-10 lg:py-32"
+		>
+			<StarPattern className="text-gold-500/[0.12] dark:text-gold-400/[0.06]" />
+
+			<div className="relative mx-auto max-w-7xl">
+				<Reveal>
+					<SectionHeading icon={Trophy} title={copy.title} lead={subtitle} />
+				</Reveal>
 
 				<div
-					className={`mt-10 grid gap-5 ${
-						awards.length > 1 ? "lg:grid-cols-2" : "mx-auto w-full max-w-3xl"
+					className={`mt-14 grid gap-6 ${
+						singleAward ? "mx-auto max-w-5xl" : "lg:grid-cols-2"
 					}`}
 				>
 					{awards.map((award) => (
-						<motion.article
-							key={award.id}
-							variants={itemVariants}
-							className="flex flex-col rounded-xl border border-gold-500/30 bg-gold-500/10 p-6 text-center transition-colors duration-300 hover:border-gold-500/60 motion-reduce:transition-none sm:p-8"
-						>
-							{award.image && (
-								<img
-									src={award.image}
-									alt={awardName(award)}
-									className="mb-5 h-32 w-full rounded-md object-contain"
-									loading="lazy"
-								/>
-							)}
-
-							<h3 className="font-display text-2xl leading-snug text-ink-900 dark:text-paper">
-								{awardName(award)}
-							</h3>
-							<p className="mt-2 text-sm font-medium text-gold-700 dark:text-gold-300">
-								{organizationName(award)}
-							</p>
-							<p className="mt-5 text-base font-semibold leading-relaxed text-ink-900 dark:text-paper sm:text-lg">
-								{description(award)}
-							</p>
-
-							<div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-gold-500/20 pt-4">
-								<span className="rounded-full border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-sm font-semibold text-gold-700 dark:text-gold-300">
-									{categoryName(award)}
-								</span>
-							</div>
-
-							<button
-								type="button"
-								onClick={(event) => openAward(award, event)}
-								aria-label={`${copy.viewDetails}: ${awardName(award)}`}
-								className="mx-auto mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-gold-500/50 bg-gold-500/10 px-5 py-2.5 text-sm font-semibold text-gold-700 transition-colors hover:border-gold-500 hover:bg-gold-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 dark:text-gold-300 motion-reduce:transition-none"
+						<Reveal key={award.id} className="h-full">
+							<article
+								className={`group relative h-full overflow-hidden rounded-3xl border border-gold-500/35 bg-white shadow-[0_28px_70px_-32px_rgba(15,27,61,0.45)] transition-shadow duration-300 hover:shadow-[0_32px_80px_-30px_rgba(176,140,66,0.55)] dark:border-gold-400/25 dark:bg-ink-900 ${
+									singleAward ? "md:grid md:grid-cols-[18rem_1fr]" : "flex flex-col"
+								}`}
 							>
-								{copy.viewDetails}
-								<ArrowUpRight
-									size={16}
-									aria-hidden="true"
-									className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none"
-								/>
-							</button>
-						</motion.article>
+								<div className="relative flex min-h-[13rem] items-center justify-center overflow-hidden bg-gradient-to-br from-ink-800 via-ink-900 to-ink-950 p-8">
+									<StarPattern className="text-gold-300/[0.14]" fade={false} />
+									<div
+										aria-hidden="true"
+										className="absolute h-48 w-48 rounded-full bg-gold-500/25 blur-3xl"
+									/>
+									{award.image ? (
+										<img
+											src={award.image}
+											alt={awardName(award)}
+											className="relative max-h-44 w-full object-contain"
+											loading="lazy"
+										/>
+									) : (
+										<StarFrame
+											size="xl"
+											className="text-gold-400 transition-transform duration-500 group-hover:rotate-6"
+										>
+											<Trophy
+												size={44}
+												strokeWidth={1.5}
+												aria-hidden="true"
+												className="text-gold-300"
+											/>
+										</StarFrame>
+									)}
+								</div>
+
+								<div className="relative flex flex-1 flex-col p-6 sm:p-8 lg:p-10">
+									<span className="w-fit rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-1.5 text-sm font-semibold text-gold-700 dark:text-gold-300">
+										{categoryName(award)}
+									</span>
+									<h3 className="mt-5 font-display text-2xl leading-snug text-ink-900 dark:text-paper sm:text-3xl">
+										{awardName(award)}
+									</h3>
+									<p className="mt-2 text-sm font-semibold text-gold-700 dark:text-gold-300 sm:text-base">
+										{organizationName(award)}
+									</p>
+									<p className="mt-5 flex-1 border-t border-gold-500/20 pt-5 text-base leading-loose text-ink-900 dark:text-paper sm:text-lg">
+										{description(award)}
+									</p>
+
+									<button
+										type="button"
+										onClick={(event) => openAward(award, event)}
+										aria-label={`${copy.viewDetails}: ${awardName(award)}`}
+										className="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-ink-900 px-6 py-3 text-sm font-semibold text-paper transition-colors hover:bg-ink-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 dark:bg-gold-500 dark:text-ink-950 dark:hover:bg-gold-400 motion-reduce:transition-none"
+									>
+										{copy.viewDetails}
+										<ArrowUpRight
+											size={16}
+											aria-hidden="true"
+											className="text-gold-300 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 dark:text-ink-950 motion-reduce:transition-none"
+										/>
+									</button>
+								</div>
+							</article>
+						</Reveal>
 					))}
 				</div>
-			</RevealCard>
+			</div>
 
 			{typeof document !== "undefined" &&
 				createPortal(
@@ -161,7 +192,7 @@ export default function AwardsSection() {
 									aria-labelledby="award-dialog-title"
 									aria-describedby="award-dialog-description"
 									tabIndex={-1}
-									className="w-full max-w-lg overflow-hidden rounded-xl border border-gold-500/30 bg-paper shadow-2xl outline-none dark:bg-ink-950"
+									className="w-full max-w-lg overflow-hidden rounded-3xl border border-gold-500/40 bg-paper shadow-2xl outline-none dark:bg-ink-950"
 									initial={
 										prefersReducedMotion
 											? false
