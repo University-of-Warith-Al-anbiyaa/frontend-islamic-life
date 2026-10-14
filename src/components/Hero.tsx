@@ -29,7 +29,7 @@ const heroImages = [
 const AUTOPLAY_MS = 5000;
 
 /** زخرفة حلقات دائرية تتحرك ببطء في جانب الـ Hero (للشاشات الكبيرة فقط). */
-function HeroGeometry() {
+export function HeroGeometry() {
 	const prefersReducedMotion = useReducedMotion();
 
 	return (

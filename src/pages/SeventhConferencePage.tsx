@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "../components/Navbar";
 import SeventhHero from "../components/SeventhHero";
-import ConferenceInfo from "../components/ConferenceInfo";
+import HomeInfo from "../components/home/HomeInfo";
 import SeventhSchedule from "../components/SeventhSchedule";
 import SeventhAbout from "../components/SeventhAbout";
 import Objectives from "../components/Objectives";
 import ParticipationRules from "../components/ParticipationRules";
 import Committees from "../components/Committees";
-import CallForPapers from "../components/CallForPapers";
-import FAQ from "../components/FAQ";
+import HomeFaq from "../components/home/HomeFaq";
+import HomeCallForPapers from "../components/home/HomeCallForPapers";
 import SeventhSponsors from "../components/SeventhSponsors";
-import VenueSection from "../components/Venue";
+import HomeVenue from "../components/home/HomeVenue";
 import Footer from "../components/Footer";
 import { useApp } from "../context/AppContext";
 
@@ -42,18 +42,16 @@ export default function SeventhConferencePage() {
 			<Navbar />
 			<main>
 				<SeventhHero />
-				<ConferenceInfo />
+				<HomeInfo />
 				<SeventhSchedule />
 				<SeventhAbout />
 				<Objectives variant="seventh" />
 				<ParticipationRules variant="seventh" />
 				<Committees />
-				<div className="mx-auto grid w-full max-w-7xl items-stretch gap-6 px-5 py-24 lg:grid-cols-2 lg:px-10 lg:py-32">
-					<FAQ />
-					<CallForPapers />
-				</div>
+				<HomeFaq />
+				<HomeCallForPapers />
 				<SeventhSponsors />
-				<VenueSection />
+				<HomeVenue />
 			</main>
 			<Footer />
 

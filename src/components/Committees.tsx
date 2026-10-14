@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import Reveal from "./Reveal";
+import { SectionHeading, StarPattern } from "./home/kit";
 
 const scientificCommitteeMembers = [
 	{
@@ -200,28 +201,29 @@ export default function Committees() {
 				: t.committees.groups[active];
 
 	return (
-		<section id="committees" className="px-5 py-24 lg:px-10 lg:py-32">
-			<div className="mx-auto max-w-7xl">
+		<section
+			id="committees"
+			className="relative overflow-hidden px-5 py-24 lg:px-10 lg:py-32"
+		>
+			<StarPattern className="text-gold-500/[0.1] dark:text-gold-400/[0.07]" />
+
+			<div className="relative mx-auto max-w-7xl">
 				<Reveal>
-					<div className="max-w-xl">
-						<p className="mb-3 text-sm font-medium text-gold-600 dark:text-gold-400">
-							{t.committees.title}
-						</p>
-						<h2 className="font-display text-3xl text-ink-900 dark:text-paper sm:text-4xl">
-							{t.committees.subtitle}
-						</h2>
-					</div>
+					<SectionHeading
+						eyebrow={t.committees.title}
+						title={t.committees.subtitle}
+					/>
 				</Reveal>
 
-				<div className="mt-10 flex flex-wrap gap-2">
+				<div className="mt-12 flex flex-wrap justify-center gap-3">
 					{t.committees.groups.map((g, i) => (
 						<button
 							key={g.title}
 							onClick={() => setActive(i)}
-							className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-colors ${
+							className={`rounded-full border px-6 py-3 text-sm font-bold transition-all duration-300 sm:text-base ${
 								active === i
-									? "border-gold-500 bg-gold-500 text-ink-950"
-									: "border-ink-900/15 text-ink-900 hover:border-gold-400 dark:border-paper/20 dark:text-paper"
+									? "border-transparent bg-gradient-to-b from-gold-300 to-gold-500 text-ink-950 shadow-[0_12px_32px_-12px_rgba(201,166,92,0.8)]"
+									: "border-gold-500/30 bg-white text-ink-900 hover:-translate-y-0.5 hover:border-gold-500 dark:border-gold-400/25 dark:bg-ink-900 dark:text-paper"
 							}`}
 						>
 							{g.title}
@@ -232,32 +234,43 @@ export default function Committees() {
 				<div
 					key={active}
 					dir={active === 1 ? "rtl" : undefined}
-					className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+					className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
 				>
-					{group.members.map((m, i) => (
-						<Reveal key={m.name} delay={(i % 9) * 45}>
-							<div className="flex h-full flex-col gap-2 rounded-lg border border-ink-900/10 p-5 dark:border-paper/10">
-								<div className="flex items-start justify-between gap-3">
-									<h3 className="font-display text-base leading-snug text-ink-900 dark:text-paper">
-										{m.name}
-									</h3>
+					{group.members.map((m, i) => {
+						const isChair =
+							m.role.toLowerCase().includes("رئيس") ||
+							m.role.toLowerCase().includes("chair");
+
+						return (
+							<Reveal key={m.name} delay={(i % 9) * 45} className="h-full">
+								<div className="group relative flex h-full flex-col gap-2 overflow-hidden rounded-2xl border border-ink-900/10 bg-white p-5 shadow-[0_14px_44px_-26px_rgba(15,27,61,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:shadow-[0_22px_56px_-26px_rgba(176,140,66,0.5)] dark:border-paper/10 dark:bg-ink-900">
 									<span
-										className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
-											m.role.toLowerCase().includes("رئيس") ||
-											m.role.toLowerCase().includes("chair")
-												? "bg-gold-500 text-ink-950"
-												: "bg-ink-900/5 text-slate-ink dark:bg-paper/10 dark:text-ink-200"
-										}`}
-									>
-										{m.role}
-									</span>
+										aria-hidden="true"
+										className={`absolute inset-y-0 start-0 w-1 bg-gradient-to-b from-gold-300 via-gold-500 to-gold-600 transition-opacity duration-300 group-hover:opacity-100 ${isChair ? "opacity-100" : "opacity-40"}`}
+									/>
+									<div className="flex items-start justify-between gap-3">
+										<h3 className="font-display text-base leading-snug text-ink-900 dark:text-paper">
+											{m.name}
+										</h3>
+										{m.role && (
+											<span
+												className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold ${
+													isChair
+														? "bg-gradient-to-b from-gold-300 to-gold-500 text-ink-950"
+														: "bg-gold-500/10 text-gold-700 dark:text-gold-300"
+												}`}
+											>
+												{m.role}
+											</span>
+										)}
+									</div>
+									<p className="text-xs leading-relaxed text-slate-ink dark:text-ink-200">
+										{m.org}
+									</p>
 								</div>
-								<p className="text-xs leading-relaxed text-slate-ink dark:text-ink-200">
-									{m.org}
-								</p>
-							</div>
-						</Reveal>
-					))}
+							</Reveal>
+						);
+					})}
 				</div>
 			</div>
 		</section>

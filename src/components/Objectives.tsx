@@ -1,5 +1,6 @@
 import { useApp } from "../context/AppContext";
 import Reveal from "./Reveal";
+import { SectionHeading, StarFrame, StarPattern } from "./home/kit";
 
 export default function Objectives({
 	variant = "default",
@@ -13,31 +14,40 @@ export default function Objectives({
 	return (
 		<section
 			id="objectives"
-			className="bg-ink-900 px-5 py-24 text-paper lg:px-10 lg:py-32"
+			className="relative overflow-hidden bg-ink-900 px-5 py-24 text-paper lg:px-10 lg:py-32"
 		>
-			<div className="mx-auto max-w-7xl">
+			<StarPattern className="text-gold-300/[0.08]" />
+			<div
+				aria-hidden="true"
+				className="pointer-events-none absolute -top-40 start-1/2 h-80 w-[40rem] -translate-x-1/2 rounded-full bg-gold-500/15 blur-3xl rtl:translate-x-1/2"
+			/>
+
+			<div className="relative mx-auto max-w-7xl">
 				<Reveal>
-					<div className="max-w-xl">
-						<h2 className="font-display text-3xl leading-tight sm:text-4xl">
-							{content.title}
-						</h2>
-						<p className="mt-3 text-justify text-base leading-relaxed text-ink-200">
-							{content.subtitle}
-						</p>
-					</div>
+					<SectionHeading
+						tone="dark"
+						title={content.title}
+						lead={content.subtitle}
+					/>
 				</Reveal>
 
-				<div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+				<div className="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:gap-5 xl:grid-cols-5">
 					{content.items.map((item, i) => (
-						<Reveal key={item.n} delay={i * 100}>
-							<div className="border-t border-gold-400/40 pt-6">
-								<span className="font-display text-3xl text-gold-400">
-									{item.n}
-								</span>
-								<h3 className="mt-4 font-display text-xl leading-snug">
+						<Reveal key={item.n} delay={(i % 5) * 80} className="h-full">
+							<div className="group relative h-full rounded-2xl border border-paper/10 bg-paper/[0.04] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-gold-400/50 hover:bg-paper/[0.08] sm:p-6">
+								<span
+									aria-hidden="true"
+									className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gold-400/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+								/>
+								<StarFrame className="text-gold-400">
+									<span className="font-display text-sm text-gold-300">
+										{item.n}
+									</span>
+								</StarFrame>
+								<h3 className="mt-5 font-display text-lg leading-snug text-paper">
 									{item.title}
 								</h3>
-								<p className="mt-3 text-justify text-base leading-relaxed text-ink-200">
+								<p className="mt-3 text-sm leading-relaxed text-ink-200">
 									{item.text}
 								</p>
 							</div>
