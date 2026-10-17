@@ -12,6 +12,10 @@ export default function Sponsors() {
 		lang === "ar"
 			? evaluatingOrganization.nameAr
 			: evaluatingOrganization.nameEn;
+	const evaluatorUrl =
+		lang === "en"
+			? (evaluatingOrganization.urlEn ?? evaluatingOrganization.url)
+			: evaluatingOrganization.url;
 
 	return (
 		<section className="relative overflow-hidden px-5 py-24 lg:px-10 lg:py-28">
@@ -25,6 +29,8 @@ export default function Sponsors() {
 				<div className="mx-auto mt-14 grid max-w-3xl items-stretch gap-6 sm:grid-cols-2 sm:gap-8">
 					{supportingOrganizations.map((sponsor, i) => {
 						const sponsorName = lang === "ar" ? sponsor.nameAr : sponsor.nameEn;
+						const sponsorUrl =
+							lang === "en" ? (sponsor.urlEn ?? sponsor.url) : sponsor.url;
 						const card = (
 							<div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-ink-900/10 bg-white shadow-[0_18px_50px_-26px_rgba(15,27,61,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-gold-500/50 hover:shadow-[0_26px_60px_-26px_rgba(176,140,66,0.55)] dark:border-paper/10">
 								<div className="flex h-44 items-center justify-center bg-white p-8">
@@ -49,9 +55,9 @@ export default function Sponsors() {
 
 						return (
 							<Reveal key={sponsorName} delay={i * 100} className="h-full">
-								{sponsor.url ? (
+								{sponsorUrl ? (
 									<a
-										href={sponsor.url}
+										href={sponsorUrl}
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label={sponsorName}
@@ -72,7 +78,7 @@ export default function Sponsors() {
 						<StarPattern className="text-gold-300/[0.09]" fade={false} />
 						<div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:text-start">
 							<a
-								href={evaluatingOrganization.url}
+								href={evaluatorUrl}
 								target="_blank"
 								rel="noopener noreferrer"
 								aria-label={evaluatorName}
@@ -90,9 +96,9 @@ export default function Sponsors() {
 									{t.sponsors.evaluatorTitle}
 								</p>
 								<h3 className="mt-2 font-display text-xl text-paper sm:text-2xl">
-									{evaluatingOrganization.url ? (
+									{evaluatorUrl ? (
 										<a
-											href={evaluatingOrganization.url}
+											href={evaluatorUrl}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="transition-colors hover:text-gold-300"

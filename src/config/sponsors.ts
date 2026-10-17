@@ -9,6 +9,7 @@ import universityLogo from '../../شعار وارث.png'
  *    (الأفضل PNG بخلفية شفافة، بحجم تقريبي 500×260)
  * 2) أضف عنصرًا جديدًا هنا واكتب اسم الملف في logo بهذا الشكل: '/images/sponsors/اسم-الملف.png'
  * 3) أضف url لموقع الجهة (اختياري) — إن تُرك فارغًا لن تكون الصورة قابلة للنقر.
+ *    يمكن إضافة urlEn لتحديد رابط مختلف عند عرض الموقع باللغة الإنجليزية.
  *
  * استخدم شعار الجهة الداعمة فقط؛ الجهة المُقيِّمة تُعرض ببطاقة أكاديمية مميزة.
  */
@@ -16,6 +17,7 @@ export interface Sponsor {
   nameAr: string
   nameEn: string
   url?: string
+  urlEn?: string
   logo?: string
 }
 
@@ -24,12 +26,14 @@ export const supportingOrganizations: Sponsor[] = [
     nameAr: 'العتبة الحسينية المقدسة',
     nameEn: 'Al-Hussainiya Holy Shrine',
     url: 'https://imamhussain.org/arabic',
+    urlEn: 'https://imamhussain.org/english',
     logo: shrineLogo,
   },
   {
     nameAr: 'جامعة وارث الأنبياء',
     nameEn: 'University of Warith Al-Anbiyaa',
-    url: 'https://uowa-new.uowa.edu.iq/arabic',
+    url: 'https://uowa.edu.iq/',
+    urlEn: 'https://uowa.edu.iq/english/',
     logo: universityLogo,
   },
 ]
@@ -37,6 +41,7 @@ export const supportingOrganizations: Sponsor[] = [
 export const evaluatingOrganization: Sponsor = {
   nameAr: 'كلية العلوم الإسلامية',
   nameEn: 'College of Islamic Sciences',
-  url: 'https://uowa-new.uowa.edu.iq/arabic/islamic',
+  url: 'https://uowa.edu.iq/arabic/islamic',
+  urlEn: 'https://uowa.edu.iq/english/islamic',
   logo: universityLogo,
 }
